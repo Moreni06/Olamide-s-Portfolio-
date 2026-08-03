@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reni — Virtual Assistant, CRM &amp; Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12211D;
+    --ink-2:#1B2E28;
+    --ink-3:#233A33;
+    --paper:#E7E8D9;
+    --paper-2:#DBDCC7;
+    --ochre:#B9861A;
+    --ochre-soft:#E4C27A;
+    --teal:#4E9C93;
+    --teal-soft:#9AD1C9;
+    --text-dark:#16211C;
+    --text-light:#F1EFE3;
+    --muted-dark:#5B6B60;
+    --muted-light:#9FB0A6;
+    --line-dark: rgba(241,239,227,0.14);
+    --line-paper: rgba(22,33,28,0.14);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--text-light);
+    font-family:'Inter',sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Newsreader',serif;
+    font-weight:600;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  a{color:inherit;}
+  .mono{
+    font-family:'IBM Plex Mono',monospace;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+  }
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:0 28px;
+  }
+  section{scroll-margin-top:84px;}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(18,33,29,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line-dark);
+  }
+  .nav-inner{
+    max-width:920px; margin:0 auto; padding:16px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:10px;
+  }
+  .nav-brand{font-size:13px; font-weight:600; color:var(--ochre-soft);}
+  .nav-links{display:flex; gap:22px; flex-wrap:wrap;}
+  .nav-links a{
+    font-size:11px; color:var(--muted-light); text-decoration:none;
+    transition:color .2s ease;
+  }
+  .nav-links a:hover{color:var(--text-light);}
+
+  /* ---------- HERO / RECORD CARD ---------- */
+  .hero{padding:64px 0 40px;}
+  .eyebrow{
+    font-size:11px; color:var(--teal-soft); margin-bottom:18px; display:block;
+  }
+  .hero h1{
+    font-size:clamp(44px,9vw,72px);
+    color:var(--text-light);
+  }
+  .hero .role{
+    font-family:'Newsreader',serif; font-style:italic; font-weight:500;
+    font-size:clamp(18px,3vw,22px); color:var(--ochre-soft); margin-top:8px;
+  }
+  .status-pill{
+    display:inline-flex; align-items:center; gap:8px;
+    margin-top:22px; padding:7px 14px;
+    border:1px solid var(--line-dark); border-radius:999px;
+    font-size:11px; color:var(--text-light);
+  }
+  .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--teal); box-shadow:0 0 0 0 rgba(78,156,147,0.6);
+    animation:pulse 2.2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(78,156,147,0.55);}
+    70%{box-shadow:0 0 0 8px rgba(78,156,147,0);}
+    100%{box-shadow:0 0 0 0 rgba(78,156,147,0);}
+  }
+
+  .record-fields{
+    margin-top:40px;
+    display:grid; grid-template-columns:repeat(3,1fr);
+    border-top:1px solid var(--line-dark);
+    /* Pure-CSS entrance — no JS dependency, so it can never fail to show. */
+    animation: fadeUp .7s ease both;
+  }
+  @keyframes fadeUp{
+    from{opacity:0; transform:translateY(14px);}
+    to{opacity:1; transform:none;}
+  }
+  .field{
+    padding:16px 0; border-bottom:1px solid var(--line-dark);
+    border-right:1px solid var(--line-dark);
+    padding-right:16px;
+  }
+  .field:nth-child(3n){border-right:none;}
+  .field .k{font-size:10px; color:var(--muted-light); display:block; margin-bottom:6px;}
+  .field .v{font-size:14px; color:var(--text-light);}
+
+  .hero-cta{margin-top:34px; display:flex; gap:14px; flex-wrap:wrap;}
+  .btn{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    padding:13px 20px; border-radius:6px; text-decoration:none; display:inline-block;
+    transition:transform .18s ease, background .18s ease;
+  }
+  .btn-primary{background:var(--ochre); color:#20170A;}
+  .btn-primary:hover{background:var(--ochre-soft); transform:translateY(-1px);}
+  .btn-ghost{border:1px solid var(--line-dark); color:var(--text-light);}
+  .btn-ghost:hover{border-color:var(--teal-soft); color:var(--teal-soft);}
+
+  /* ---------- REVEAL ---------- */
+  /* Visible by default. Only animate if JS actually ran (html.js present). */
+  .reveal{opacity:1; transform:none;}
+  html.js .reveal{opacity:0; transform:translateY(14px); transition:opacity .6s ease, transform .6s ease;}
+  html.js .reveal.in{opacity:1; transform:none;}
+
+  /* ---------- SECTION LABELS ---------- */
+  .sec-head{margin-bottom:26px;}
+  .sec-head .tag{font-size:11px; color:var(--ochre-soft); display:block; margin-bottom:10px;}
+  .sec-head h2{font-size:clamp(26px,4vw,34px); color:var(--text-light);}
+
+  /* ---------- ABOUT (paper card) ---------- */
+  .paper-card{
+    background:var(--paper); color:var(--text-dark);
+    border-radius:14px; padding:36px;
+    margin:76px 0;
+  }
+  .paper-card p{font-size:16px; color:var(--text-dark); max-width:60ch;}
+  .paper-card p + p{margin-top:14px;}
+
+  /* ---------- TAGS ---------- */
+  .tag-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:20px;}
+  .chip{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.04em;
+    padding:8px 13px; border-radius:7px; text-transform:uppercase;
+    background:var(--paper-2); color:var(--text-dark);
+    transition:transform .15s ease;
+  }
+  .chip:hover{transform:translateY(-2px);}
+
+  /* ---------- FEATURED PROJECT ---------- */
+  .deal-header{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:0;
+    border:1px solid var(--line-dark); border-radius:10px; overflow:hidden;
+    margin-bottom:34px;
+  }
+  .deal-field{padding:16px; border-right:1px solid var(--line-dark);}
+  .deal-field:last-child{border-right:none;}
+  .deal-field .k{font-size:10px; color:var(--muted-light); display:block; margin-bottom:6px;}
+  .deal-field .v{font-size:13px; color:var(--text-light);}
+  .deal-field .v.won{color:var(--teal-soft);}
+
+  .pipeline{
+    display:flex; flex-direction:column; gap:10px;
+    border-left:2px solid var(--line-dark);
+    padding-left:0;
+    margin-left:14px;
+  }
+  .stage{
+    position:relative;
+    background:var(--ink-2);
+    border:1px solid var(--line-dark);
+    border-radius:10px;
+    margin-left:20px;
+  }
+  .stage::before{
+    content:'';
+    position:absolute; left:-28px; top:22px;
+    width:11px; height:11px; border-radius:50%;
+    background:var(--ink); border:2px solid var(--teal);
+  }
+  .stage summary{
+    list-style:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 20px;
+    gap:14px;
+  }
+  .stage summary::-webkit-details-marker{display:none;}
+  .stage-title{display:flex; align-items:baseline; gap:12px;}
+  .stage-num{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ochre-soft);}
+  .stage-name{font-family:'Newsreader',serif; font-size:18px; color:var(--text-light);}
+  .chevron{
+    font-family:'IBM Plex Mono',monospace; color:var(--muted-light); font-size:13px;
+    transition:transform .25s ease;
+  }
+  .stage[open] .chevron{transform:rotate(45deg);}
+  .stage-body{
+    padding:0 20px 20px 20px;
+    color:var(--muted-light);
+    font-size:14px;
+    max-width:60ch;
+  }
+  .stage-tool{
+    display:inline-block; margin-top:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.05em;
+    padding:5px 10px; border-radius:6px; background:var(--ink-3); color:var(--teal-soft);
+  }
+
+  .log-entry{
+    margin-top:24px; margin-left:34px;
+    padding:14px 18px;
+    background:var(--ink-2); border:1px solid var(--line-dark); border-radius:10px;
+    font-size:13px; color:var(--teal-soft);
+    display:flex; gap:10px; align-items:flex-start;
+    max-width:60ch;
+  }
+
+  /* ---------- TIMELINE ---------- */
+  .timeline{margin-top:10px;}
+  .t-item{
+    display:grid; grid-template-columns:100px 1fr; gap:20px;
+    padding:22px 0; border-top:1px solid var(--line-dark);
+  }
+  .t-item:last-child{border-bottom:1px solid var(--line-dark);}
+  .t-tag{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ochre-soft); padding-top:2px;}
+  .t-title{font-family:'Newsreader',serif; font-size:19px; color:var(--text-light); margin-bottom:6px;}
+  .t-desc{font-size:14px; color:var(--muted-light); max-width:58ch;}
+
+  /* ---------- TOOLS ---------- */
+  .tool-row{display:flex; flex-wrap:wrap; gap:12px; margin-top:8px;}
+  .tool{
+    padding:10px 16px; border:1px solid var(--line-dark); border-radius:8px;
+    font-size:13px; color:var(--text-light);
+  }
+
+  /* ---------- CONTACT ---------- */
+  .contact-card{
+    background:var(--ink-2); border:1px solid var(--line-dark); border-radius:14px;
+    padding:40px; margin:76px 0 60px;
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:24px;
+  }
+  .contact-card h2{font-size:clamp(24px,4vw,30px); color:var(--text-light); max-width:20ch;}
+  .contact-fields{display:flex; flex-direction:column; gap:6px;}
+  .contact-fields .v{font-size:14px; color:var(--muted-light);}
+
+  footer{
+    padding:30px 0 50px; text-align:center;
+    font-size:11px; color:var(--muted-light);
+    font-family:'IBM Plex Mono',monospace;
+  }
+
+  @media (max-width:720px){
+    .record-fields{grid-template-columns:repeat(2,1fr);}
+    .field:nth-child(3n){border-right:1px solid var(--line-dark);}
+    .field:nth-child(2n){border-right:none;}
+    .deal-header{grid-template-columns:repeat(2,1fr);}
+    .deal-field:nth-child(2n){border-right:none;}
+    .deal-field:nth-child(-n+2){border-bottom:1px solid var(--line-dark);}
+    .pipeline{margin-left:6px;}
+    .stage{margin-left:18px;}
+    .t-item{grid-template-columns:1fr; gap:6px;}
+    .contact-card{flex-direction:column; align-items:flex-start;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <span class="nav-brand mono">R. // VA RECORD</span>
+    <div class="nav-links mono">
+      <a href="#about">About</a>
+      <a href="#case-study">Case Study</a>
+      <a href="#timeline">Activity Log</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <span class="eyebrow mono">Contact Record // #001</span>
+    <h1>Reni</h1>
+    <div class="role">Virtual Assistant — CRM &amp; Systems</div>
+
+    <div class="status-pill">
+      <span class="dot"></span>
+      <span class="mono">Actively training — open to new work</span>
+    </div>
+
+    <div class="record-fields">
+      <div class="field">
+        <span class="k mono">Focus</span>
+        <span class="v">Lead pipelines, automation, reporting</span>
+      </div>
+      <div class="field">
+        <span class="k mono">Based</span>
+        <span class="v">Nigeria</span>
+      </div>
+      <div class="field">
+        <span class="k mono">Background</span>
+        <span class="v">Biochemistry student</span>
+      </div>
+      <div class="field">
+        <span class="k mono">Trained via</span>
+        <span class="v">Virtudux VA Program</span>
+      </div>
+      <div class="field">
+        <span class="k mono">Primary tool</span>
+        <span class="v">Zoho CRM</span>
+      </div>
+      <div class="field">
+        <span class="k mono">Flagship build</span>
+        <span class="v">Vantage Retail &amp; Living</span>
+      </div>
+    </div>
+
+    <div class="hero-cta">
+      <a href="#case-study" class="btn btn-primary">View CRM Case Study</a>
+      <a href="#contact" class="btn btn-ghost">Get in touch</a>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="reveal">
+    <div class="paper-card">
+      <span class="mono" style="font-size:11px;color:#7A6420;">Field Notes</span>
+      <p style="margin-top:14px;">I'm Reni — a biochemistry student who's spent the past several weeks training as a virtual assistant, specializing in CRM and systems support. I like taking scattered, undefined problems and building something structured out of them: a form, a workflow, a pipeline, a checklist — whatever keeps nothing from falling through the cracks.</p>
+      <p>My background is in science, so I default to process: define the steps, test them, document what breaks, fix it, test again. That's exactly how the case study below came together.</p>
+      <div class="tag-row">
+        <span class="chip">Lead Capture &amp; Tagging</span>
+        <span class="chip">Workflow Automation</span>
+        <span class="chip">Data Hygiene</span>
+        <span class="chip">Audience Segmentation</span>
+        <span class="chip">Pipeline Reporting</span>
+        <span class="chip">Inbox &amp; Calendar Mgmt</span>
+        <span class="chip">Client Communications</span>
+        <span class="chip">Process Documentation</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CASE STUDY -->
+  <section id="case-study" class="reveal" style="margin-bottom:80px;">
+    <div class="sec-head">
+      <span class="tag mono">Featured Project</span>
+      <h2>Deal Record: Vantage Retail &amp; Living</h2>
+    </div>
+
+    <div class="deal-header">
+      <div class="deal-field">
+        <span class="k mono">Role</span>
+        <span class="v">CRM Assistant</span>
+      </div>
+      <div class="deal-field">
+        <span class="k mono">Tool</span>
+        <span class="v">Zoho CRM</span>
+      </div>
+      <div class="deal-field">
+        <span class="k mono">Scope</span>
+        <span class="v">Built from scratch</span>
+      </div>
+      <div class="deal-field">
+        <span class="k mono">Stage</span>
+        <span class="v won">● Complete</span>
+      </div>
+    </div>
+
+    <div class="pipeline">
+
+      <details class="stage" open>
+        <summary>
+          <div class="stage-title">
+            <span class="stage-num mono">01</span>
+            <span class="stage-name">Lead Ingestion &amp; Tagging</span>
+          </div>
+          <span class="chevron">+</span>
+        </summary>
+        <div class="stage-body">
+          Built a live website inquiry form and custom fields so every lead is captured and tagged the moment it arrives — by source, deal size, and industry. WhatsApp and Social DM channels were modeled with tagged test leads, documented for live integration via Zoho SalesIQ and Zoho Social.
+          <span class="stage-tool mono">Webforms · Custom Fields</span>
+        </div>
+      </details>
+
+      <details class="stage">
+        <summary>
+          <div class="stage-title">
+            <span class="stage-num mono">02</span>
+            <span class="stage-name">Data Hygiene &amp; Enrichment</span>
+          </div>
+          <span class="chevron">+</span>
+        </summary>
+        <div class="stage-body">
+          Saved views catch leads with missing contact info and leads gone quiet for 14+ days, backed by a documented weekly manual dedup routine — built around the free-tier's tool limits, not in spite of them.
+          <span class="stage-tool mono">Custom Views</span>
+        </div>
+      </details>
+
+      <details class="stage">
+        <summary>
+          <div class="stage-title">
+            <span class="stage-num mono">03</span>
+            <span class="stage-name">Cadence Architecture</span>
+          </div>
+          <span class="chevron">+</span>
+        </summary>
+        <div class="stage-body">
+          A workflow rule fires an instant welcome email and auto-assigns a two-day follow-up task the moment a lead is created — so every inbound message gets both an immediate response and a human check-in.
+          <span class="stage-tool mono">Workflow Rules</span>
+        </div>
+      </details>
+
+      <details class="stage">
+        <summary>
+          <div class="stage-title">
+            <span class="stage-num mono">04</span>
+            <span class="stage-name">Audience Segmentation</span>
+          </div>
+          <span class="chevron">+</span>
+        </summary>
+        <div class="stage-body">
+          Saved views group leads by deal size, channel, and industry — so outreach can be targeted instead of blanket, and high-value leads never get lost in general volume.
+          <span class="stage-tool mono">Custom Views</span>
+        </div>
+      </details>
+
+      <details class="stage">
+        <summary>
+          <div class="stage-title">
+            <span class="stage-num mono">05</span>
+            <span class="stage-name">Pipeline Velocity Reporting</span>
+          </div>
+          <span class="chevron">+</span>
+        </summary>
+        <div class="stage-body">
+          A live report groups every lead by pipeline stage, showing exactly how many sit at each point from first contact to close — the kind of visibility a founder needs without asking for it.
+          <span class="stage-tool mono">Reports</span>
+        </div>
+      </details>
+
+      <details class="stage">
+        <summary>
+          <div class="stage-title">
+            <span class="stage-num mono">06</span>
+            <span class="stage-name">Audit Reconciliation</span>
+          </div>
+          <span class="chevron">+</span>
+        </summary>
+        <div class="stage-body">
+          A weekly checklist cross-checks CRM records against real interactions and payments — activity logs, stalled leads, converted deals, matching invoices — catching gaps before they compound.
+          <span class="stage-tool mono">Documented Process</span>
+        </div>
+      </details>
+
+    </div>
+
+    <div class="log-entry">
+      <span class="mono">✓</span>
+      <span>Verified end to end: a real lead was submitted through the live web form and traced through capture → tagging → automation → reporting, confirming the full system works together, not just in pieces.</span>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section id="timeline" class="reveal" style="margin-bottom:20px;">
+    <div class="sec-head">
+      <span class="tag mono">Activity Log</span>
+      <h2>How I got here</h2>
+    </div>
+    <div class="timeline">
+      <div class="t-item">
+        <span class="t-tag mono">Week 01</span>
+        <div>
+          <div class="t-title">Foundations</div>
+          <div class="t-desc">First LinkedIn posts, a WhatsApp business catalogue, Canva marketing designs, and learning Notion and inbox labeling from scratch.</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <span class="t-tag mono">Week 02</span>
+        <div>
+          <div class="t-title">Founder Operations</div>
+          <div class="t-desc">Triaged a founder's inbox against urgency, relationship, and importance, and rebuilt a conflicting calendar into a clean, conflict-free one.</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <span class="t-tag mono">Adv.</span>
+        <div>
+          <div class="t-title">Founder Simulation</div>
+          <div class="t-desc">Twenty-four hours as VA to a startup founder — a wholesale proposal, a shipping-delay apology, a supplier chase-up, and a newsletter, all under deadline.</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <span class="t-tag mono">Flagship</span>
+        <div>
+          <div class="t-title">CRM Assistant — Vantage Retail &amp; Living</div>
+          <div class="t-desc">Designed and built a complete CRM system from scratch for a simulated retail brand. See the full case study above.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOOLS -->
+  <section class="reveal" style="margin-bottom:20px;">
+    <div class="sec-head">
+      <span class="tag mono">Associated Apps</span>
+      <h2>Tools I work in</h2>
+    </div>
+    <div class="tool-row">
+      <span class="tool">Zoho CRM</span>
+      <span class="tool">Notion</span>
+      <span class="tool">Canva</span>
+      <span class="tool">Google Workspace</span>
+      <span class="tool">Gmail</span>
+      <span class="tool">WhatsApp Business</span>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="reveal">
+    <div class="contact-card">
+      <h2>Let's build your system next.</h2>
+      <div class="contact-fields">
+        <span class="v mono">[your email]</span>
+        <span class="v mono">[your phone]</span>
+        <span class="v mono">[your linkedin]</span>
+      </div>
+      <a href="mailto:youremail@example.com" class="btn btn-primary">Email me</a>
+    </div>
+  </section>
+
+</div>
+
+<footer class="mono">Reni — Virtual Assistant, CRM &amp; Systems · Built during Virtudux training</footer>
+
+<script>
+  // Mark that JS is running — CSS only hides .reveal elements when this class is present,
+  // so content is never dependent on JS to be visible.
+  document.documentElement.classList.add('js');
+
+  const revealEls = document.querySelectorAll('.reveal');
+
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    // No IntersectionObserver support — just show everything.
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+</script>
+
+</body>
+</html>
